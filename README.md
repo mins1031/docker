@@ -1,5 +1,6 @@
 # docker
- **재즐보프님의 유튜브 영상시청하며 정리하는 내용이다.https://www.youtube.com/channel/UCW_PO0316aD16L3IcD34wPg **
+
+ **.https://www.youtube.com/channel/UCW_PO0316aD16L3IcD34wPg 강의 내용 정리**
 * 컨테이너 기술을 지원하는 다양한 프로젝트중에 하나이다
 * 컨테이너 기술을 이전에도 있었으나 도커로 인해 알려졌다, 컨테이너 기술의 사실상 표준
 * 다양한 운영체제에서 사용가능

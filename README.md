@@ -170,3 +170,11 @@
   -e wordpress_db_host=mysql \위에서 설정한 app-network에 mysql이 떠있고 워드프로세스의 디비는 mysql이라는 컨테이너 명을 설정해 둘이 같이 네트워크를 사용함으로서 설정이 가능하다.
   ...
  ```
+ ### volume 명령어
+ * volume mount(-v) 명령어
+ > 만약 위의 mysql과 워드프로세스가 한 네트워크로 연결되어있는 상황에서 mysql 컨테이너를 stop시키고 rm 시켰을때 워드 프로세스가 죽게 되는데 이러한 경우를 방지하기 위해 데이터를 로컬에 저장해놓고 컨테이너 구동시에 voulme mount(-v)명령어를 넣어주어 데이터를 끌어다 사용할 수 있다.
+ ```
+ ex) -v /my/own/datadir:/var/lib/mysql  -> 로컬의 디렉터리 주소: 컨테이너의 내부 주소를 연결하는 명령어. 즉,로컬의 디렉터리인 /my/own/datadir 에 컨테이너 내부 주소인 /var/lib/mysql의 데이터를 저장한다는 명령어이다.
+ ```
+ ### 도커 컴포즈
+ 

@@ -158,3 +158,15 @@
  docker network create [option] network : 도커 컨테이너끼리 이름으로 통신할 수 있는 가상 네트워크를 만든다.
  ex) docker network create app-network -> app-network라는 이름으로 wordpress와 mysql이 통신할 네트워크를 만든다 
  ```
+ * network connect 명령어
+ ```
+ docker network connect [option] network container : 기존에 생성된 컨테이너에 네트워크를 추가한다.
+ ex) docker network connect app-network mysql : mysql 컨테이너에 app-network 네트워크를 추가한다.
+ ```
+ * network option 명령어
+ ```
+ docker run -d -p 8080:80 \
+  --network=app-network \ 컨테이너를 돌릴때 워드프로세스의 네트워크를 app-network로 설정한다 
+  -e wordpress_db_host=mysql \위에서 설정한 app-network에 mysql이 떠있고 워드프로세스의 디비는 mysql이라는 컨테이너 명을 설정해 둘이 같이 네트워크를 사용함으로서 설정이 가능하다.
+  ...
+ ```

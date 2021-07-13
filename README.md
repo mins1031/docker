@@ -133,3 +133,28 @@
  ```
  docker rm [option] container [container] : stop으로 종료된 컨테이너를 완전히 제거하는 명령어 이다.
  ```
+ * log 명령어
+ ```
+ docker logs [option] container : docker logs 컨테이너ID 시 프로그램이 실행되며 생긴 로그를 확인가능.
+ -> 컨테이너가 정상적으로 동작하는지 확인하는 좋은 방법은 로그를 확인하는 것이다. 기본옵션과 -f, -tail 옵션.
+ docker logs -f 컨테이너ID : 단순 logs는 로그를 보여주고 끝나는데 -f는 로그를 실시간 모니터링 해준다.
+ ```
+ * images 명령어
+ ```
+ docker images [option] [repository[:tag]] : docker images는 다운로드한 이미지 목록을 보는 명령어이다.
+ ```
+ * pull 명령어
+ ```
+ docker pull [option] name[:tag|@DIGEST] : 이미지를 다운로드하는 명령어이다. run시 이미지가 없으면 자동으로 다운로드(pull)하지만 수동 pull도 가능하다.
+ docker pull ubuntu 18.04 -> 18,04버전의 우분투 이미지 다운로드 명령어이다.
+ ```
+ * rmi 명령어
+ ```
+ docker rmi [option] image [image...] : 다운 받은 이미지를 삭제하는 방법이다. images 명령어를 통해 얻는 이미지 목록에서 이미지 id를 입력하면 삭제가 된다. 단 컨테이너가 실행중인 이미지는 삭제되지 않는다.
+ ex) docker rmi hasicorp/http-echo -> hasicorp/http-echo 이미지 삭제 
+ ```
+ * network create 명령어
+ ```
+ docker network create [option] network : 도커 컨테이너끼리 이름으로 통신할 수 있는 가상 네트워크를 만든다.
+ ex) docker network create app-network -> app-network라는 이름으로 wordpress와 mysql이 통신할 네트워크를 만든다 
+ ```

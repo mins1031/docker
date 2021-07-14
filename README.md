@@ -78,9 +78,27 @@
  
 ## 2. 도커 레지스트리
 > 도커 레지스트리에는 사용자가 사용할 수 있도록 데이터베이스를 통해 이미지를 제공해주고 있다. 누구나 이미지를 만들고 푸시할 수 있으며 푸시된 이미지는 다른 사람들에게 공유또한 가능하다.
-*  
+<img src="https://user-images.githubusercontent.com/1712635/38648889-75bd77da-3da8-11e8-8f6d-7e45a30af502.png"/>
+* 레지스트리를 조금더 간단하게 확인하는건 https://hub.docker.com/  도커허브라는 곳에서 더 자세하게 확인이 가능하다.
+* 도커 자체에서 제공한 static 이미지도 있지만 사용자들이 업로드한 이미지들도 존재한다. 
+ * static 이미지는 이미지명 만 존재 ex) mysql, node
+ * 사용자 이미지는 사용자명/이미지명 이렇게 존재한다 ex) miny/movie-search-API
  
-## 3. 도커 기본 명령어
+## 3. 도커의 라이프 사이클
+<img src="https://postfiles.pstatic.net/MjAyMTA2MDZfMzIg/MDAxNjIyOTU1OTQxMjg2.mmoZUptx2hR0vCClFXCkXzD1GL_QxuetuxBCH-0cP_cg.K4GIorRdXwUCmyMvoeFKGYmrwdim1TKaQpJ6B_gqz0Qg.PNG.isc0304/image.png?type=w773"/>
+ 
+1) 우선 도커 레지스트리에서 'pull' 명령으로 이미지를 다운받는다. 이때 image자체는 실행이 불가능한 파일이다
+2) pull된 이미지를 실행하려면 컨테이너를 만들어 실행해야 되고 'create' 명령어를 통해 이미지를 컨테이너로 만들수 있다(=실행가능한 상태로 만들수 있다.)
+3) 이제 컨테이너를 실행하기 위해 'start'명령어로 메모리에 올려 사용하게 된다
+4) 그리고 이미지에 대해 'create'와 'start'를 한번에 해준는 명령어가 'run' 이다.  
+5) 'pull'의 경우 풀링이 되어있는 이미지를 run할경우 위대로 'create','start'만 실행되지만 풀링이 되어있지 않은 이미지를 run하는경우 pull을 먼저 진행하게 된다 
+6) run은 create와 start를 동시에 실행하는 명령인데 run을 실수로 2번 명령하면 똑같은 컨테이너가 2개 실행되는 꼴이다. 그렇기에 run은 create를 사용해야하는경우에만 사용하고 웬만하면 run과 start를 나눠서 사용하는편이 좋다고 한다.
+* 실행 된 컨테이너를 중지시키는 명령은 stop
+* 컨테이너를 삭제하는 명령어는 rm
+* 이미지를 삭제하는 명령어는 rmi
+* 사용한 컨테이너를 다시 이미지로 만들고 싶은경우 컨테이너를 commit 해서 이미지로 만들어 놓으면 나중에 다시 가져와 그대로 사용가능하다. ex) 개발환경에 필요한 DB, testDB, 웹서버등을 구축해놓고 이미지화해서 언제든지 사용가능 하게할 수 도 있을것 같다
+ 
+## 도커 기본 명령어
 > 도커는 명령어를 입력하는 클라이언트와 컨테이너를 관리하는 서버 이렇게 2개의 프로그램이 있다. 만약 10.1.1.1 서버에서 도커 서버를 설치하고 2000 포트로 오픈한다면 해당 서버에 직접 접속하지 않더라도 외부에서 2000포트로 도커 명령어를 전달 할 수 있다.
  ### run - 컨테이너 실행
  * docker run [option] image[:tag|@Digest] [commend] [arg....]
@@ -151,8 +169,10 @@
  * rmi 명령어
  ```
  docker rmi [option] image [image...] : 다운 받은 이미지를 삭제하는 방법이다. images 명령어를 통해 얻는 이미지 목록에서 이미지 id를 입력하면 삭제가 된다. 단 컨테이너가 실행중인 이미지는 삭제되지 않는다.
- ex) docker rmi hasicorp/http-echo -> hasicorp/http-echo 이미지 삭제 
+ ex) docker rmi hasicorp/http-echo -> hasicorp/http-echo 이미지 삭제  
  ```
+  * -f 를 붙이는 경우는 컨테이너가 떠있는데 이미지를 삭제하고 싶은경우에 주로 사용된다고 한다.
+ 
  * network create 명령어
  ```
  docker network create [option] network : 도커 컨테이너끼리 이름으로 통신할 수 있는 가상 네트워크를 만든다.
@@ -176,5 +196,24 @@
  ```
  ex) -v /my/own/datadir:/var/lib/mysql  -> 로컬의 디렉터리 주소: 컨테이너의 내부 주소를 연결하는 명령어. 즉,로컬의 디렉터리인 /my/own/datadir 에 컨테이너 내부 주소인 /var/lib/mysql의 데이터를 저장한다는 명령어이다.
  ```
- ### 도커 컴포즈
- 
+ ### 도커 이미지 만들기
+ > 도커의 이미지란?
+ * 이미지는 프로세스가 실행되는 파일의 집합(환경)이다. 프로세스는 환경(파일)을 변경할 수 있다
+ * 이 환경을 저장해 새로운 이미지를 만들수 있다
+ * 기존 우분투 이미지에 git이 설치된 새로운 이미지 파일인 ubuntu/git01이라는 이미지를 만들 수 있다
+  * 여기서 이미지 name이 ubuntu인것과 ubuntu/git01의 차이는 단순 ubuntu는 기본 이미지 이고 ubuntu/git01은 커스텀 이미지 즉 인위적으로 무언가 추가된 이미지 이다.
+ ```
+ 이미지 생성 명령어
+ docker build -t miny/ubuntu:git01 .
+ |명령어|  -t   |이름공간| / |이미지이름|:|태그| .
+ ```
+  #### Dockerfile
+  * 도커 이미지를 컨테이너로 run할시 dockerfile이 해당 디렉토리에 있다면 dockerfile의 내용을 이미지에 적용해준다.
+  ```
+  우분투 이미지를 run하는 디렉토리의 dockerfile에
+  FROM ubuntu:latest
+  RUN apt-get update
+  RUN apt-get install -y git
+  와 같은 명령어를 명시하면 우분투 이미지가 컨테이너로 실행되면 git의 최신 버전을 설치하는 작업을 자동으로 진행해준다.
+  ``` 
+   

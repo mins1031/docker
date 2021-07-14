@@ -99,10 +99,38 @@
 * 사용한 컨테이너를 다시 이미지로 만들고 싶은경우 컨테이너를 commit 해서 이미지로 만들어 놓으면 나중에 다시 가져와 그대로 사용가능하다. ex) 개발환경에 필요한 DB, testDB, 웹서버등을 구축해놓고 이미지화해서 언제든지 사용가능 하게할 수 도 있을것 같다
  
 ## 4. 이미지 비밀: 레이어
+> 이미지는 레이어별로 변경된 사항에 대해서 저장을 하는 방식이다.
+ * 도커 이미지는 레이어라는 정보들로 구성이 된다. 
+ * 도커 이미지 정보 확인
+ > 도커 이미지의 매니페스트 파일을 확인하면 도커 이미지가 갖는 다양한 정보를 확인할 수 있다.
+ ```
+ sudo docker inspect nginx : nginx 이미지에 대한 정보를 확인 가능하다. 
+ ```
+ > /var/lib/docker/리눅스 내의 도커 저장소이다. 도커에서 이미지를 풀링 하면 docker디렉토리 아래에 도커에 관련된 여러 디렉토리가 있는데 이중 image와 overlay2라는 디렉토리가 있다. 이미지를 풀링하면 이미지가 image에 저장되고 이 이미지의 실질적 정보들은 overlay2에 저장된다고 한다.=> image 안엔 imagedb, layerdb가 있는데 imagedb는 layerdb의 정보를 가지고 있고 layerdb는 overlay2 디렉토리의 정보를 가지고 있다. overlay2는 이미지의 변경사항을  저장하는데 overlay2디렉토리 밑의 l 디렉토리에 저장이된다. 즉, 이미지의 간단한 데이터는 image에 그외 데이터들은 overlay2에 저장된다고 알아두자.
 
-<img src="https://ssl.pstatic.net/static/blog/skin/101/body.jpg"/>
 
+ * 도커 이미지 저장소 위치 확인
+ ```
+ sudo docker info
+ sudo -i
+ ```
+ * 레이어 저장소 확인
+ 
+ * 도커 용량 확인
+  * du -sh /var/lib/docker/ #도커가 설치된 환경 용량 확인
+   * 2.0G	/var/lib/docker/
 
+  * du -sh /var/lib/docker/image/ # 도커 이미지에 대한 정보 저장 디렉토리
+   * 2.7M	/var/lib/docker/image/
+
+  * du -sh /var/lib/docker/overlay2/ # 도커 이미지의 파일 시스템이 사용되는 실제 디렉토리
+   * 2.0G	/var/lib/docker/overlay2/
+
+  * du -sh /var/lib/docker/containers/ # 도커 컨테이너 정보 저장 디렉토리
+   * 136K	/var/lib/docker/containers/
+cd 
+ 
+ 
 ## 도커 기본 명령어
 > 도커는 명령어를 입력하는 클라이언트와 컨테이너를 관리하는 서버 이렇게 2개의 프로그램이 있다. 만약 10.1.1.1 서버에서 도커 서버를 설치하고 2000 포트로 오픈한다면 해당 서버에 직접 접속하지 않더라도 외부에서 2000포트로 도커 명령어를 전달 할 수 있다.
  ### run - 컨테이너 실행
@@ -195,6 +223,15 @@
   -e wordpress_db_host=mysql \위에서 설정한 app-network에 mysql이 떠있고 워드프로세스의 디비는 mysql이라는 컨테이너 명을 설정해 둘이 같이 네트워크를 사용함으로서 설정이 가능하다.
   ...
  ```
+ 
+ ### 호스트 및 컨테이너 간 파일 복사
+ > 도커의 cp명령을 사용하면 파일을 복제해 컨테이너로 전달하거나 꺼낼수 있다. 호스트와 컨테이너,컨테이너 간의 파일을 복제할 수 있다.
+ ```
+ sudo docker cp <path> <to container>:<path> : 현 로컬에서 다른 컨테이너로 보내는 명령어
+ sudo docker cp <from container>:<path> <path>  : 타 컨테이너에서 현 로컬로 가져오는 명령어
+ sudo docker cp <from container>:<path> <to container>:<path> : 
+ ```
+
  ### volume 명령어
  * volume mount(-v) 명령어
  > 만약 위의 mysql과 워드프로세스가 한 네트워크로 연결되어있는 상황에서 mysql 컨테이너를 stop시키고 rm 시켰을때 워드 프로세스가 죽게 되는데 이러한 경우를 방지하기 위해 데이터를 로컬에 저장해놓고 컨테이너 구동시에 voulme mount(-v)명령어를 넣어주어 데이터를 끌어다 사용할 수 있다.
